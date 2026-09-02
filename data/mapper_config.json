@@ -1,0 +1,7 @@
+[
+  {"file":"car_type_mapper.json"},
+  {"file":"card_brand_mapper.json"},
+  {"file":"location_mapper.json"},
+  {"file":"payment_method_mapper.json"},
+  {"file":"vehicle_model_mapper.json"}
+]
