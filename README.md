@@ -62,6 +62,16 @@ Regenerate it with:
 uv run ridingapp-generate-historical --count 5000 --days-back 90
 ```
 
+## Mapper files
+
+`data/mappers/` has value → id lookup files for the categorical fields in the event data, derived from the same lists the app uses to generate bookings: `car_type_mapper.json`, `payment_method_mapper.json`, `vehicle_model_mapper.json`, `location_mapper.json`, `card_brand_mapper.json`. Join these against `data/historical_bookings.jsonl` on the field's natural value (e.g. `car_type`, `payment.method`, `driver.vehicle_make` + `driver.vehicle_model`) to get a surrogate id for a dimensional model.
+
+Regenerate them with:
+
+```bash
+uv run ridingapp-generate-mappers
+```
+
 ## Project layout
 
 - `src/ridingapp/app.py` — Streamlit UI
@@ -69,6 +79,7 @@ uv run ridingapp-generate-historical --count 5000 --days-back 90
 - `src/ridingapp/eventhub_client.py` — Event Hub producer wrapper
 - `src/ridingapp/generator.py` — synthetic booking generator
 - `src/ridingapp/historical.py` — generates the historical batch JSONL file
+- `src/ridingapp/mappers.py` — generates the value → id lookup files
 - `src/ridingapp/pricing.py` — fare/distance estimation
 - `src/ridingapp/locations.py` — sample pickup/drop-off locations
 - `src/ridingapp/drivers.py` — random driver/vehicle assignment
