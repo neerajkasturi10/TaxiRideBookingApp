@@ -1,6 +1,22 @@
 {
-  "Visa": 1,
-  "Mastercard": 2,
-  "Amex": 3,
-  "Discover": 4
+  "Visa": {
+    "id": 1,
+    "country_of_origin": "USA",
+    "network_type": "Global"
+  },
+  "Mastercard": {
+    "id": 2,
+    "country_of_origin": "USA",
+    "network_type": "Global"
+  },
+  "Amex": {
+    "id": 3,
+    "country_of_origin": "USA",
+    "network_type": "Global"
+  },
+  "Discover": {
+    "id": 4,
+    "country_of_origin": "USA",
+    "network_type": "Domestic"
+  }
 }

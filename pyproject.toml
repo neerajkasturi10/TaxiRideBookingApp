@@ -15,6 +15,7 @@ dependencies = [
 ridingapp = "ridingapp:main"
 ridingapp-generate-historical = "ridingapp.historical:main"
 ridingapp-generate-mappers = "ridingapp.mappers:main"
+ridingapp-generate-transactions = "ridingapp.transactions:main"
 
 [build-system]
 requires = ["uv_build>=0.12.7,<0.13.0"]

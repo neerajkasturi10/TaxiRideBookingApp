@@ -1,9 +1,51 @@
 {
-  "Toyota Camry": 1,
-  "Honda Accord": 2,
-  "Tesla Model 3": 3,
-  "Ford Explorer": 4,
-  "Chevrolet Suburban": 5,
-  "BMW 5 Series": 6,
-  "Hyundai Elantra": 7
+  "Toyota Camry": {
+    "id": 1,
+    "make": "Toyota",
+    "model": "Camry",
+    "vehicle_category": "Sedan",
+    "fuel_type": "Gasoline"
+  },
+  "Honda Accord": {
+    "id": 2,
+    "make": "Honda",
+    "model": "Accord",
+    "vehicle_category": "Sedan",
+    "fuel_type": "Gasoline"
+  },
+  "Tesla Model 3": {
+    "id": 3,
+    "make": "Tesla",
+    "model": "Model 3",
+    "vehicle_category": "Sedan",
+    "fuel_type": "Electric"
+  },
+  "Ford Explorer": {
+    "id": 4,
+    "make": "Ford",
+    "model": "Explorer",
+    "vehicle_category": "SUV",
+    "fuel_type": "Gasoline"
+  },
+  "Chevrolet Suburban": {
+    "id": 5,
+    "make": "Chevrolet",
+    "model": "Suburban",
+    "vehicle_category": "SUV",
+    "fuel_type": "Gasoline"
+  },
+  "BMW 5 Series": {
+    "id": 6,
+    "make": "BMW",
+    "model": "5 Series",
+    "vehicle_category": "Sedan",
+    "fuel_type": "Gasoline"
+  },
+  "Hyundai Elantra": {
+    "id": 7,
+    "make": "Hyundai",
+    "model": "Elantra",
+    "vehicle_category": "Sedan",
+    "fuel_type": "Gasoline"
+  }
 }

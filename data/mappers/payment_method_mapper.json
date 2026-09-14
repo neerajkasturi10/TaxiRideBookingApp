@@ -1,5 +1,20 @@
 {
-  "Card": 1,
-  "Cash": 2,
-  "Wallet": 3
+  "Card": {
+    "id": 1,
+    "description": "Credit or debit card",
+    "is_cashless": true,
+    "requires_card_details": true
+  },
+  "Cash": {
+    "id": 2,
+    "description": "Physical cash payment",
+    "is_cashless": false,
+    "requires_card_details": false
+  },
+  "Wallet": {
+    "id": 3,
+    "description": "Digital wallet balance",
+    "is_cashless": true,
+    "requires_card_details": false
+  }
 }

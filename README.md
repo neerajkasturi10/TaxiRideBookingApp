@@ -64,12 +64,30 @@ uv run ridingapp-generate-historical --count 5000 --days-back 90
 
 ## Mapper files
 
-`data/mappers/` has value → id lookup files for the categorical fields in the event data, derived from the same lists the app uses to generate bookings: `car_type_mapper.json`, `payment_method_mapper.json`, `vehicle_model_mapper.json`, `location_mapper.json`, `card_brand_mapper.json`. Join these against `data/historical_bookings.jsonl` on the field's natural value (e.g. `car_type`, `payment.method`, `driver.vehicle_make` + `driver.vehicle_model`) to get a surrogate id for a dimensional model.
+`data/mappers/` has dimension-style lookup files for the categorical fields in the event data, derived from the same source lists the app uses to generate bookings. Each maps a natural value to a surrogate id plus a few descriptive attributes, so they can be used directly as small dimension tables in analytics:
+
+- `car_type_mapper.json` — `{id, category, capacity, base_fare, per_km_rate, multiplier}`
+- `payment_method_mapper.json` — `{id, description, is_cashless, requires_card_details}`
+- `vehicle_model_mapper.json` — `{id, make, model, vehicle_category, fuel_type}`
+- `location_mapper.json` — `{id, city, state, region, zip, latitude, longitude}`
+- `card_brand_mapper.json` — `{id, country_of_origin, network_type}`
+
+Join these against `data/historical_bookings.jsonl` on the field's natural value (e.g. `car_type`, `payment.method`, `driver.vehicle_make` + `driver.vehicle_model`, `pickup_location.name`) to bring in the surrogate id and attributes.
 
 Regenerate them with:
 
 ```bash
 uv run ridingapp-generate-mappers
+```
+
+## Customer transactions
+
+`data/customer_transactions.csv` has 2000 standalone synthetic transactions (`transaction_id`, `customer_id`, `customer_name`, `customer_email`, `transaction_type`, `transaction_amount`, `currency`, `payment_method`, `card_brand`, `transaction_status`, `transaction_timestamp`), not tied to any specific booking — useful as its own batch-load source. `transaction_type` includes `ride_payment`, `tip`, `refund`, and `cancellation_fee` (refunds/fees are negative amounts); `transaction_status` is weighted mostly `SUCCESS` with some `FAILED`/`PENDING`/`REFUNDED`.
+
+Regenerate it with:
+
+```bash
+uv run ridingapp-generate-transactions --count 2000 --days-back 90
 ```
 
 ## Project layout
@@ -80,6 +98,7 @@ uv run ridingapp-generate-mappers
 - `src/ridingapp/generator.py` — synthetic booking generator
 - `src/ridingapp/historical.py` — generates the historical batch JSONL file
 - `src/ridingapp/mappers.py` — generates the value → id lookup files
+- `src/ridingapp/transactions.py` — generates the standalone customer transactions CSV
 - `src/ridingapp/pricing.py` — fare/distance estimation
 - `src/ridingapp/locations.py` — sample pickup/drop-off locations
 - `src/ridingapp/drivers.py` — random driver/vehicle assignment

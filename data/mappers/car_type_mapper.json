@@ -1,7 +1,42 @@
 {
-  "Economy": 1,
-  "Comfort": 2,
-  "XL": 3,
-  "Premium": 4,
-  "Pool": 5
+  "Economy": {
+    "id": 1,
+    "category": "Standard",
+    "capacity": 4,
+    "base_fare": 2.5,
+    "per_km_rate": 1.1,
+    "multiplier": 1.0
+  },
+  "Comfort": {
+    "id": 2,
+    "category": "Standard",
+    "capacity": 4,
+    "base_fare": 3.5,
+    "per_km_rate": 1.4,
+    "multiplier": 1.2
+  },
+  "XL": {
+    "id": 3,
+    "category": "Extra Large",
+    "capacity": 6,
+    "base_fare": 5.0,
+    "per_km_rate": 1.8,
+    "multiplier": 1.5
+  },
+  "Premium": {
+    "id": 4,
+    "category": "Luxury",
+    "capacity": 4,
+    "base_fare": 8.0,
+    "per_km_rate": 2.5,
+    "multiplier": 2.0
+  },
+  "Pool": {
+    "id": 5,
+    "category": "Shared",
+    "capacity": 4,
+    "base_fare": 1.5,
+    "per_km_rate": 0.8,
+    "multiplier": 0.7
+  }
 }
