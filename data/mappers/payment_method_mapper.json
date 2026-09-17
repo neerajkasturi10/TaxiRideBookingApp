@@ -13,7 +13,7 @@
   },
   "Wallet": {
     "id": 3,
-    "description": "Digital wallet balance",
+    "description": "Digital wallet balance like Apple Pay/Google Pay",
     "is_cashless": true,
     "requires_card_details": false
   }
