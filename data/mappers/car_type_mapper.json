@@ -27,7 +27,7 @@
     "id": 4,
     "category": "Luxury",
     "capacity": 4,
-    "base_fare": 8.0,
+    "base_fare": 9.0,
     "per_km_rate": 2.5,
     "multiplier": 2.0
   },
