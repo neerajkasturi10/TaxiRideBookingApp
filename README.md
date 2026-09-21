@@ -1,6 +1,6 @@
 # RideApp
 
-A ride-booking app that streams booking events to Azure Event Hub — built as the producer side of an Azure real-time streaming portfolio project.
+A ride-booking app that streams booking events to Azure Event Hub — built as the producer side of an Azure real-time streaming portfolio project. It also ships batch/historical data (bookings, transactions, dimension lookups) for demoing the batch-load side of the same pipeline.
 
 - Event Hub Namespace: `RideApp-Events`
 - Event Hub instance: `riding_topic`
@@ -13,7 +13,12 @@ cp .env.example .env
 # then edit .env with your Event Hub connection string
 ```
 
-The connection string comes from the Event Hub namespace's Shared Access Policy (e.g. `RootManageSharedAccessKey`) in the Azure Portal. It should **not** include an `EntityPath` — the Event Hub instance name is supplied separately via `EVENTHUB_NAME`, which is passed explicitly as `eventhub_name` to `EventHubProducerClient.from_connection_string(...)`. That's what pins every send to `riding_topic` specifically — creating other Event Hub instances in the same namespace later has no effect on where this app sends events.
+`.env` needs:
+
+- `EVENTHUB_CONNECTION_STR` — from the Event Hub namespace's Shared Access Policy (e.g. `RootManageSharedAccessKey`) in the Azure Portal. It should **not** include an `EntityPath`.
+- `EVENTHUB_NAME` — the Event Hub instance name (`riding_topic`), passed explicitly as `eventhub_name` to `EventHubProducerClient.from_connection_string(...)`. That's what pins every send to `riding_topic` specifically — creating other Event Hub instances in the same namespace later has no effect on where this app sends events.
+
+`.env` is gitignored and never committed.
 
 ## Run
 
@@ -25,6 +30,8 @@ This opens a browser UI with two tabs:
 
 - **Book a Ride** — a booking form (customer info, pickup/drop-off, car type, payment method, promo code). On submit, it builds a booking event and sends it to Event Hub.
 - **Synthetic Generator** — generates and streams N randomly generated bookings (via Faker), useful for demoing continuous event volume through the pipeline.
+
+If Event Hub isn't configured, the app still builds and displays the event JSON, but shows a warning instead of sending it.
 
 ## Event schema
 
@@ -50,6 +57,8 @@ Each booking produces a JSON event like:
 }
 ```
 
+`source` is `"streamlit_app"` for manually-booked rides, `"synthetic_generator"` for the live generator tab, and `"historical_batch"` for the pre-generated historical file below.
+
 Card details are masked to brand + last 4 digits before the event is built — the full card number is never stored or transmitted.
 
 ## Historical batch data
@@ -72,13 +81,17 @@ uv run ridingapp-generate-historical --count 5000 --days-back 90
 - `location_mapper.json` — `{id, city, state, region, zip, latitude, longitude}`
 - `card_brand_mapper.json` — `{id, country_of_origin, network_type}`
 
-Join these against `data/historical_bookings.jsonl` on the field's natural value (e.g. `car_type`, `payment.method`, `driver.vehicle_make` + `driver.vehicle_model`, `pickup_location.name`) to bring in the surrogate id and attributes.
+`data/mapper_config.json` lists the mapper filenames, for driving a script that loads all of them without hardcoding paths.
+
+Join the mappers against `data/historical_bookings.jsonl` on the field's natural value (e.g. `car_type`, `payment.method`, `driver.vehicle_make` + `driver.vehicle_model`, `pickup_location.name`) to bring in the surrogate id and attributes.
 
 Regenerate them with:
 
 ```bash
 uv run ridingapp-generate-mappers
 ```
+
+Note: some attribute values (e.g. car type base fares) have since been hand-edited directly in the JSON files on GitHub to tune the sample data. Regenerating overwrites those edits back to the defaults defined in `mappers.py`/`pricing.py` — check `git diff` before regenerating if you want to preserve manual tweaks.
 
 ## Customer transactions
 
@@ -92,14 +105,32 @@ uv run ridingapp-generate-transactions --count 2000 --days-back 90
 
 ## Project layout
 
-- `src/ridingapp/app.py` — Streamlit UI
-- `src/ridingapp/models.py` — booking event schema
-- `src/ridingapp/eventhub_client.py` — Event Hub producer wrapper
-- `src/ridingapp/generator.py` — synthetic booking generator
-- `src/ridingapp/historical.py` — generates the historical batch JSONL file
-- `src/ridingapp/mappers.py` — generates the value → id lookup files
-- `src/ridingapp/transactions.py` — generates the standalone customer transactions CSV
-- `src/ridingapp/pricing.py` — fare/distance estimation
-- `src/ridingapp/locations.py` — sample pickup/drop-off locations
-- `src/ridingapp/drivers.py` — random driver/vehicle assignment
-- `src/ridingapp/config.py` — loads Event Hub settings from `.env`
+```
+src/ridingapp/
+  app.py              Streamlit UI (Book a Ride + Synthetic Generator tabs)
+  models.py           booking event schema (build_booking_event, card masking)
+  eventhub_client.py   Event Hub producer wrapper (RideEventPublisher)
+  generator.py         synthetic booking generator (live + batch use)
+  historical.py        CLI: generates data/historical_bookings.jsonl
+  mappers.py            CLI: generates data/mappers/*.json
+  transactions.py       CLI: generates data/customer_transactions.csv
+  pricing.py            fare/distance estimation, car type rate table
+  locations.py          sample pickup/drop-off locations (SF Bay Area)
+  drivers.py            random driver/vehicle assignment
+  config.py             loads Event Hub settings from .env
+
+data/
+  historical_bookings.jsonl    5000 historical booking events
+  customer_transactions.csv    2000 standalone transaction records
+  mapper_config.json           list of mapper filenames
+  mappers/                     dimension lookup files (see above)
+```
+
+## CLI commands
+
+| Command | Purpose |
+|---|---|
+| `uv run streamlit run src/ridingapp/app.py` | Launch the booking app |
+| `uv run ridingapp-generate-historical` | Regenerate `data/historical_bookings.jsonl` |
+| `uv run ridingapp-generate-mappers` | Regenerate `data/mappers/*.json` |
+| `uv run ridingapp-generate-transactions` | Regenerate `data/customer_transactions.csv` |
